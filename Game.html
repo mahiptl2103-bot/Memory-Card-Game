@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Memory Card Game</title>
+
+<style>
+body {
+    text-align: center;
+    font-family: Arial;
+    background: #ffe6f2;
+}
+
+h1 {
+    color: #d63384;
+}
+
+.game {
+    display: grid;
+    grid-template-columns: repeat(4, 70px);
+    gap: 10px;
+    justify-content: center;
+}
+
+.card {
+    background: #d63384;
+    color: white;
+    height: 70px;
+    font-size: 30px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.card:hover {
+    background: #ff66a3;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Memory Card Game</h1>
+<p>Find the matching pairs!</p>
+
+<div class="game" id="game"></div>
+<h3 id="message"></h3>
+
+<script>
+let emojis = ['🍎','🍌','🍇','🍒',
+              '🍎','🍌','🍇','🍒'];
+
+emojis.sort(() => Math.random() - 0.5);
+
+let game = document.getElementById("game");
+let first = null;
+let second = null;
+let lock = false;
+let matched = 0;
+
+emojis.forEach(emoji => {
+    let card = document.createElement("button");
+    card.className = "card";
+    card.textContent = "?";
+
+    card.onclick = function() {
+        if (lock || card.textContent !== "?") return;
+
+        card.textContent = emoji;
+
+        if (first === null) {
+            first = card;
+        } else {
+            second = card;
+            lock = true;
+
+            if (first.textContent === second.textContent) {
+                matched++;
+                first = null;
+                second = null;
+                lock = false;
+
+                if (matched === 4) {
+                    document.getElementById("message")
+                    .textContent = "🎉 You Won!";
+                }
+            } else {
+                setTimeout(() => {
+                    first.textContent = "?";
+                    second.textContent = "?";
+                    first = null;
+                    second = null;
+                    lock = false;
+                }, 800);
+            }
+        }
+    };
+
+    game.appendChild(card);
+});
+</script>
+
+</body>
+</html>
