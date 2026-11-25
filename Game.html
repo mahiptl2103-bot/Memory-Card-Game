@@ -1,104 +1,180 @@
 
+
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>Memory Card Game</title>
+<title>Memory Match Game</title>
 
 <style>
 body {
-    text-align: center;
     font-family: Arial;
-    background: #ffe6f2;
+    text-align: center;
+    background: #e4f1e8;
+    color: #315b48;
 }
 
 h1 {
-    color: #d63384;
+    color: #28634b;
+    margin-top: 25px;
 }
 
 .game {
     display: grid;
-    grid-template-columns: repeat(4, 70px);
-    gap: 10px;
+    grid-template-columns: repeat(5, 75px);
+    gap: 12px;
     justify-content: center;
+    margin: 25px auto;
 }
 
 .card {
-    background: #d63384;
-    color: white;
-    height: 70px;
+    height: 75px;
+    width: 75px;
     font-size: 30px;
-    border: none;
-    border-radius: 10px;
+    border: 2px solid #b5d6c2;
+    border-radius: 12px;
+    background: white;
     cursor: pointer;
+    box-shadow: 0 3px 6px #b5d6c2;
 }
 
 .card:hover {
-    background: #ff66a3;
+    background: #cce8d5;
+}
+
+.card:disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+#message {
+    color: #26734d;
+    font-size: 22px;
+}
+
+#restart {
+    background: #397b5b;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Memory Card Game</h1>
-<p>Find the matching pairs!</p>
+<h1>🌿 Memory Match Game 🌿</h1>
+<p>Find all 7 matching pairs!</p>
+
+<h3 id="score">Matches: 0 / 7</h3>
 
 <div class="game" id="game"></div>
+
 <h3 id="message"></h3>
 
+<button id="restart" onclick="startGame()">
+Restart Game
+</button>
+
 <script>
-let emojis = ['🍎','🍌','🍇','🍒',
-              '🍎','🍌','🍇','🍒'];
 
-emojis.sort(() => Math.random() - 0.5);
+let emojis = [
+    '🐱','🐶','🐼','🦊','🐸','🐵','🦋',
+    '🐱','🐶','🐼','🦊','🐸','🐵','🦋',
+    '⭐'
+];
 
-let game = document.getElementById("game");
 let first = null;
 let second = null;
 let lock = false;
 let matched = 0;
 
-emojis.forEach(emoji => {
-    let card = document.createElement("button");
-    card.className = "card";
-    card.textContent = "?";
+function startGame() {
 
-    card.onclick = function() {
-        if (lock || card.textContent !== "?") return;
+    let game = document.getElementById("game");
 
-        card.textContent = emoji;
+    game.innerHTML = "";
+    first = null;
+    second = null;
+    lock = false;
+    matched = 0;
 
-        if (first === null) {
-            first = card;
-        } else {
-            second = card;
-            lock = true;
+    document.getElementById("score").textContent =
+    "Matches: 0 / 7";
 
-            if (first.textContent === second.textContent) {
-                matched++;
-                first = null;
-                second = null;
-                lock = false;
+    document.getElementById("message").textContent = "";
 
-                if (matched === 4) {
-                    document.getElementById("message")
-                    .textContent = "🎉 You Won!";
-                }
-            } else {
-                setTimeout(() => {
-                    first.textContent = "?";
-                    second.textContent = "?";
+    emojis.sort(() => Math.random() - 0.5);
+
+    emojis.forEach(emoji => {
+
+        let card = document.createElement("button");
+
+        card.className = "card";
+        card.textContent = "?";
+
+        card.onclick = function() {
+
+            if (lock || card.textContent !== "?") return;
+
+            card.textContent = emoji;
+
+            if (first === null) {
+                first = card;
+            }
+            else {
+                second = card;
+                lock = true;
+
+                if (first.textContent === second.textContent) {
+
+                    matched++;
+
+                    first.disabled = true;
+                    second.disabled = true;
+
                     first = null;
                     second = null;
                     lock = false;
-                }, 800);
-            }
-        }
-    };
 
-    game.appendChild(card);
-});
+                    document.getElementById("score").textContent =
+                    "Matches: " + matched + " / 7";
+
+                    if (matched === 7) {
+                        document.getElementById("message")
+                        .textContent = "🎉 Congratulations! You Won!";
+                    }
+
+                }
+                else {
+
+                    setTimeout(() => {
+
+                        first.textContent = "?";
+                        second.textContent = "?";
+
+                        first = null;
+                        second = null;
+                        lock = false;
+
+                    }, 800);
+
+                }
+            }
+        };
+
+        game.appendChild(card);
+
+    });
+}
+
+startGame();
+
 </script>
 
 </body>
 </html>
+
